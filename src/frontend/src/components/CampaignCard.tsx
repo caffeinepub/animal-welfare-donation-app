@@ -9,6 +9,21 @@ interface CampaignCardProps {
   campaign: AnimalCampaign;
 }
 
+function getAnimalImage(animalType: string): string | null {
+  switch (animalType.toLowerCase()) {
+    case "cow":
+      return "/assets/generated/cow-eating.dim_800x600.jpg";
+    case "dog":
+      return "/assets/generated/dog-eating.dim_800x600.jpg";
+    case "cat":
+      return "/assets/generated/cat-eating.dim_800x600.jpg";
+    case "bird":
+      return "/assets/generated/bird-eating.dim_800x600.jpg";
+    default:
+      return null;
+  }
+}
+
 export default function CampaignCard({ campaign }: CampaignCardProps) {
   const navigate = useNavigate();
   const goal = Number(campaign.fundraisingGoal);
@@ -21,6 +36,8 @@ export default function CampaignCard({ campaign }: CampaignCardProps) {
     navigate({ to: "/campaign/$id", params: { id: campaign.id.toString() } });
   };
 
+  const fallbackImage = getAnimalImage(campaign.animalType);
+
   return (
     <Card
       className="overflow-hidden cursor-pointer card-hover shadow-card border-border group"
@@ -32,6 +49,12 @@ export default function CampaignCard({ campaign }: CampaignCardProps) {
           <img
             src={campaign.imageUrl}
             alt={campaign.title}
+            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+          />
+        ) : fallbackImage ? (
+          <img
+            src={fallbackImage}
+            alt={campaign.animalType}
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
           />
         ) : (

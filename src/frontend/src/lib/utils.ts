@@ -36,9 +36,9 @@ export function getDaysRemaining(
 
 export function getAnimalEmoji(animalType: string): string {
   const type = animalType.toLowerCase();
-  if (type.includes("cow")) return "\ud83d\udc04";
-  if (type.includes("dog")) return "\ud83d\udc15";
-  if (type.includes("cat")) return "\ud83d\udc08";
-  if (type.includes("bird")) return "\ud83d\udc26";
-  return "\ud83d\udc3e";
+  if (type.includes("cow")) return "🐄";
+  if (type.includes("dog")) return "🐕";
+  if (type.includes("cat")) return "🐈";
+  if (type.includes("bird")) return "🐦";
+  return "🐾";
 }
