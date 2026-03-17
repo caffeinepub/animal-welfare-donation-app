@@ -46,11 +46,11 @@ export default function Layout({ children }: LayoutProps) {
           <Link to="/" className="flex items-center gap-2 group">
             <img
               src="/assets/generated/pawfund-logo.dim_256x256.png"
-              alt="PawFund"
+              alt="GOSEVA PASHUPALAK"
               className="w-10 h-10 rounded-full object-cover"
             />
             <span className="font-serif font-bold text-xl text-foreground group-hover:text-primary transition-colors">
-              PawFund
+              GOSEVA PASHUPALAK
             </span>
           </Link>
 
@@ -191,22 +191,22 @@ export default function Layout({ children }: LayoutProps) {
             <div className="flex items-center gap-2">
               <img
                 src="/assets/generated/pawfund-logo.dim_256x256.png"
-                alt="PawFund"
+                alt="GOSEVA PASHUPALAK"
                 className="w-8 h-8 rounded-full object-cover"
               />
               <span className="font-serif font-bold text-foreground">
-                PawFund
+                GOSEVA PASHUPALAK
               </span>
               <span className="text-muted-foreground text-sm">
-                — Every paw counts.
+                — Har prani ki seva.
               </span>
             </div>
             <p className="text-sm text-muted-foreground text-center">
-              © {new Date().getFullYear()} PawFund. Built with{" "}
+              © {new Date().getFullYear()} GOSEVA PASHUPALAK. Built with{" "}
               <Heart className="inline w-3.5 h-3.5 text-primary fill-primary" />{" "}
               using{" "}
               <a
-                href={`https://caffeine.ai/?utm_source=Caffeine-footer&utm_medium=referral&utm_content=${encodeURIComponent(window.location.hostname || "pawfund-app")}`}
+                href={`https://caffeine.ai/?utm_source=Caffeine-footer&utm_medium=referral&utm_content=${encodeURIComponent(window.location.hostname || "goseva-pashupalak")}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-primary hover:underline font-semibold"

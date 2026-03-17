@@ -9,7 +9,7 @@ import { Separator } from "@/components/ui/separator";
 import { Copy, PawPrint, RefreshCw } from "lucide-react";
 import { toast } from "sonner";
 import type { AnimalCampaign, Donation } from "../backend";
-import { formatCurrency, formatDate } from "../lib/utils";
+import { formatCurrency, formatDate } from "../lib/helpers";
 
 interface ReceiptModalProps {
   open: boolean;

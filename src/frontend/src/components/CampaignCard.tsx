@@ -2,14 +2,26 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { useNavigate } from "@tanstack/react-router";
+import { useState } from "react";
 import type { AnimalCampaign } from "../backend";
-import { formatCurrency, getAnimalEmoji, getDaysRemaining } from "../lib/utils";
+import {
+  formatCurrency,
+  getAnimalEmoji,
+  getDaysRemaining,
+} from "../lib/helpers";
 
 interface CampaignCardProps {
   campaign: AnimalCampaign;
 }
 
-function getAnimalImage(animalType: string): string | null {
+function getAnimalImage(animalType: string, title?: string): string {
+  // Special campaigns with custom images
+  if (
+    title?.toLowerCase().includes("padwa") ||
+    title?.toLowerCase().includes("padva")
+  ) {
+    return "/assets/generated/cow-padwa-feeding.dim_800x600.jpg";
+  }
   switch (animalType.toLowerCase()) {
     case "cow":
       return "/assets/generated/cow-eating.dim_800x600.jpg";
@@ -18,9 +30,9 @@ function getAnimalImage(animalType: string): string | null {
     case "cat":
       return "/assets/generated/cat-eating.dim_800x600.jpg";
     case "bird":
-      return "/assets/generated/bird-eating.dim_800x600.jpg";
+      return "/assets/generated/birds-eating.dim_800x600.jpg";
     default:
-      return null;
+      return "/assets/generated/cow-eating.dim_800x600.jpg";
   }
 }
 
@@ -32,11 +44,14 @@ export default function CampaignCard({ campaign }: CampaignCardProps) {
     goal > 0 ? Math.min(Math.round((raised / goal) * 100), 100) : 0;
   const daysLeft = getDaysRemaining(campaign.endDate);
 
+  const animalImage = getAnimalImage(campaign.animalType, campaign.title);
+  const [imgSrc, setImgSrc] = useState(
+    campaign.imageUrl ? campaign.imageUrl : animalImage,
+  );
+
   const handleClick = () => {
     navigate({ to: "/campaign/$id", params: { id: campaign.id.toString() } });
   };
-
-  const fallbackImage = getAnimalImage(campaign.animalType);
 
   return (
     <Card
@@ -45,25 +60,12 @@ export default function CampaignCard({ campaign }: CampaignCardProps) {
     >
       {/* Image */}
       <div className="relative h-44 bg-accent overflow-hidden">
-        {campaign.imageUrl ? (
-          <img
-            src={campaign.imageUrl}
-            alt={campaign.title}
-            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-          />
-        ) : fallbackImage ? (
-          <img
-            src={fallbackImage}
-            alt={campaign.animalType}
-            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-          />
-        ) : (
-          <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-primary/10 to-secondary/20">
-            <span className="text-5xl">
-              {getAnimalEmoji(campaign.animalType)}
-            </span>
-          </div>
-        )}
+        <img
+          src={imgSrc}
+          alt={campaign.title}
+          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+          onError={() => setImgSrc(animalImage)}
+        />
         <div className="absolute top-3 left-3 flex gap-2">
           <Badge
             variant={campaign.isActive ? "default" : "secondary"}

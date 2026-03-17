@@ -2,12 +2,13 @@ import Map "mo:core/Map";
 import Array "mo:core/Array";
 import Text "mo:core/Text";
 import Time "mo:core/Time";
-import Iter "mo:core/Iter";
+
 import Nat "mo:core/Nat";
 import Runtime "mo:core/Runtime";
 import Order "mo:core/Order";
 import List "mo:core/List";
 import Principal "mo:core/Principal";
+import Int "mo:core/Int";
 import MixinAuthorization "authorization/MixinAuthorization";
 import AccessControl "authorization/access-control";
 
@@ -57,6 +58,91 @@ actor {
   let activeCampaigns = List.empty<AnimalCampaign>();
   var campaignIdCounter = 0;
   let donations = List.empty<Donation>();
+
+  // Seed campaigns
+  // Timestamps: start = Jan 1 2026, end = Dec 31 2026 (nanoseconds)
+  let seedStart : Time.Time = 1735689600_000_000_000;
+  let seedEnd : Time.Time = 1767225600_000_000_000;
+
+  let seedCampaigns : [AnimalCampaign] = [
+    {
+      id = 0;
+      title = "Gau Seva - Daily Cow Feeding";
+      description = "Help us feed abandoned and stray cows every day with nutritious fodder, green grass, and clean water. Your donation ensures these gentle creatures are well-fed and cared for.";
+      animalType = "Cow";
+      imageUrl = "";
+      fundraisingGoal = 50000;
+      amountRaised = 12000;
+      startDate = seedStart;
+      endDate = seedEnd;
+      isActive = true;
+    },
+    {
+      id = 1;
+      title = "Cow feeding on occasion of Padwa";
+      description = "Celebrate Padwa (Pratipada) by contributing to the sacred tradition of Gau Seva. On this auspicious day, help us feed cows with special prasad, jaggery, and fodder as a mark of devotion and gratitude. Your seva brings blessings to your family.";
+      animalType = "Cow";
+      imageUrl = "";
+      fundraisingGoal = 31000;
+      amountRaised = 0;
+      startDate = seedStart;
+      endDate = seedEnd;
+      isActive = true;
+    },
+    {
+      id = 5;
+      title = "Gau Seva Padva";
+      description = "Gau Seva Padva is a sacred campaign to celebrate the auspicious occasion of Padva by serving and feeding cows. Join us in honouring our Gau Mata with nutritious prasad, green fodder, jaggery, and love. Your donation on this holy day brings immense blessings and fulfils the tradition of Gau Puja.";
+      animalType = "Cow";
+      imageUrl = "";
+      fundraisingGoal = 51000;
+      amountRaised = 0;
+      startDate = seedStart;
+      endDate = seedEnd;
+      isActive = true;
+    },
+    {
+      id = 2;
+      title = "Street Dog Feeding Drive";
+      description = "Thousands of street dogs go hungry every day. Join our feeding drive to provide nutritious meals to stray dogs in your city. Every contribution helps us reach more dogs and reduce their suffering.";
+      animalType = "Dog";
+      imageUrl = "";
+      fundraisingGoal = 25000;
+      amountRaised = 8500;
+      startDate = seedStart;
+      endDate = seedEnd;
+      isActive = true;
+    },
+    {
+      id = 3;
+      title = "Stray Cat Care & Feeding";
+      description = "Help us provide daily meals and basic medical care for stray and abandoned cats. Your donation supports our volunteers who tirelessly care for these gentle animals every day.";
+      animalType = "Cat";
+      imageUrl = "";
+      fundraisingGoal = 15000;
+      amountRaised = 4200;
+      startDate = seedStart;
+      endDate = seedEnd;
+      isActive = true;
+    },
+    {
+      id = 4;
+      title = "Bird Feeding & Water Station";
+      description = "Set up bird feeding stations and clean water bowls across the city, especially during summer. Help sparrows, pigeons, crows, and other birds stay nourished and hydrated through the harsh seasons.";
+      animalType = "Bird";
+      imageUrl = "";
+      fundraisingGoal = 10000;
+      amountRaised = 3100;
+      startDate = seedStart;
+      endDate = seedEnd;
+      isActive = true;
+    },
+  ];
+
+  for (campaign in seedCampaigns.vals()) {
+    activeCampaigns.add(campaign);
+  };
+  campaignIdCounter := 6;
 
   module AnimalCampaignModule {
     public func compareByAmountRaised(campaign1 : AnimalCampaign, campaign2 : AnimalCampaign) : Order.Order {
@@ -186,7 +272,7 @@ actor {
     };
 
     let now = Time.now();
-    let referenceId = campaignId.toText() # "-" # caller.toText() # "-" # Int.toText(now);
+    let referenceId = campaignId.toText() # "-" # caller.toText() # "-" # now.toText();
 
     let donation : Donation = {
       donor = caller;
@@ -239,7 +325,7 @@ actor {
     };
 
     let now = Time.now();
-    let referenceId = "REC-" # campaignId.toText() # "-" # caller.toText() # "-" # Int.toText(now);
+    let referenceId = "REC-" # campaignId.toText() # "-" # caller.toText() # "-" # now.toText();
 
     let donation : Donation = {
       donor = caller;

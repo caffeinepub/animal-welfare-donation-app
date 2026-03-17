@@ -2,7 +2,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Clock, Target, TrendingUp, Users } from "lucide-react";
 import type { AnimalCampaign } from "../backend";
-import { formatCurrency, getDaysRemaining } from "../lib/utils";
+import { formatCurrency, getDaysRemaining } from "../lib/helpers";
 
 interface CampaignProgressProps {
   campaign: AnimalCampaign;

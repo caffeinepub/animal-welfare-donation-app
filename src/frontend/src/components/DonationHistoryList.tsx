@@ -4,7 +4,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Receipt, RefreshCw } from "lucide-react";
 import type { AnimalCampaign, Donation } from "../backend";
-import { formatCurrency, formatDate } from "../lib/utils";
+import { formatCurrency, formatDate } from "../lib/helpers";
 
 interface DonationHistoryListProps {
   donations: Donation[];

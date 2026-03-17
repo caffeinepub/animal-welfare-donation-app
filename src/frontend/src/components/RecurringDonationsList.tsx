@@ -8,7 +8,7 @@ import {
   useGetAllCampaigns,
   useGetRecurringDonations,
 } from "../hooks/useQueries";
-import { formatCurrency, formatDate } from "../lib/utils";
+import { formatCurrency, formatDate } from "../lib/helpers";
 
 export default function RecurringDonationsList() {
   const { data: recurringDonations, isLoading } = useGetRecurringDonations();

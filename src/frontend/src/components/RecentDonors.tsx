@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Heart } from "lucide-react";
 import type { Donation } from "../backend";
-import { formatCurrency, formatDate } from "../lib/utils";
+import { formatCurrency, formatDate } from "../lib/helpers";
 
 interface RecentDonorsProps {
   donations: Donation[];

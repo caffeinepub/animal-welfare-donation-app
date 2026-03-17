@@ -13,7 +13,7 @@ import {
 } from "../hooks/useQueries";
 
 const PRESET_AMOUNTS = [51, 101, 251, 501, 1001];
-const UPI_ID = "gosevapashupalak@upi";
+const UPI_ID = "Nikhil.thanedar@ybl";
 const UPI_LINK = `upi://pay?pa=${UPI_ID}&pn=GOSEVA+PASHUPALAK&cu=INR`;
 
 interface DonationFormProps {

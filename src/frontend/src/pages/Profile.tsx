@@ -14,7 +14,7 @@ import {
   useGetCallerUserProfile,
   useSaveCallerUserProfile,
 } from "../hooks/useQueries";
-import { formatCurrency } from "../lib/utils";
+import { formatCurrency } from "../lib/helpers";
 
 export default function Profile() {
   const { identity, login } = useInternetIdentity();

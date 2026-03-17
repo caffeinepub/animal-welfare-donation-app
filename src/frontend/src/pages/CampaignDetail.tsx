@@ -14,7 +14,7 @@ import {
   useGetCampaign,
   useGetDonationHistory,
 } from "../hooks/useQueries";
-import { formatDate, getAnimalEmoji } from "../lib/utils";
+import { formatDate, getAnimalEmoji } from "../lib/helpers";
 
 export default function CampaignDetail() {
   const { id } = useParams({ from: "/campaign/$id" });
