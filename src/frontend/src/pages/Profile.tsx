@@ -5,9 +5,10 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useNavigate } from "@tanstack/react-router";
-import { Edit2, Heart, History, LogIn, Save, X } from "lucide-react";
+import { Edit2, Heart, History, LogIn, Phone, Save, X } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
+import type { DonorProfile } from "../backend";
 import RecurringDonationsList from "../components/RecurringDonationsList";
 import { useInternetIdentity } from "../hooks/useInternetIdentity";
 import {
@@ -25,26 +26,29 @@ export default function Profile() {
   const { mutateAsync: saveProfile, isPending: isSaving } =
     useSaveCallerUserProfile();
 
+  const profile = userProfile as DonorProfile | null | undefined;
+
   const [isEditing, setIsEditing] = useState(false);
   const [editNickname, setEditNickname] = useState("");
-  const [editImageUrl, setEditImageUrl] = useState("");
+  const [editMobileNumber, setEditMobileNumber] = useState("");
 
   const startEdit = () => {
-    setEditNickname(userProfile?.nickname || "");
-    setEditImageUrl(userProfile?.imageUrl || "");
+    setEditNickname(profile?.nickname || "");
+    setEditMobileNumber(profile?.mobileNumber || "");
     setIsEditing(true);
   };
 
   const cancelEdit = () => setIsEditing(false);
 
   const handleSave = async () => {
-    if (!editNickname.trim() || !userProfile) return;
+    if (!editNickname.trim() || !profile) return;
+    const updated: DonorProfile = {
+      ...profile,
+      nickname: editNickname.trim(),
+      mobileNumber: editMobileNumber.trim(),
+    };
     try {
-      await saveProfile({
-        ...userProfile,
-        nickname: editNickname.trim(),
-        imageUrl: editImageUrl.trim(),
-      });
+      await saveProfile(updated);
       setIsEditing(false);
       toast.success("Profile updated!");
     } catch {
@@ -86,8 +90,9 @@ export default function Profile() {
     );
   }
 
-  const initials = userProfile?.nickname?.slice(0, 2).toUpperCase() || "U";
-  const totalDonated = Number(userProfile?.totalDonated ?? 0);
+  const initials = profile?.nickname?.slice(0, 2).toUpperCase() || "U";
+  const totalDonated = Number(profile?.totalDonated ?? 0);
+  const mobileNumber = profile?.mobileNumber || "";
 
   return (
     <div className="max-w-2xl mx-auto px-4 py-8 space-y-6 pb-12">
@@ -108,6 +113,7 @@ export default function Profile() {
                 size="sm"
                 onClick={startEdit}
                 className="rounded-full h-8"
+                data-ocid="profile.edit_button"
               >
                 <Edit2 className="w-3.5 h-3.5 mr-1" />
                 Edit
@@ -119,6 +125,7 @@ export default function Profile() {
                   size="sm"
                   onClick={cancelEdit}
                   className="rounded-full h-8"
+                  data-ocid="profile.cancel_button"
                 >
                   <X className="w-3.5 h-3.5 mr-1" />
                   Cancel
@@ -128,6 +135,7 @@ export default function Profile() {
                   onClick={handleSave}
                   disabled={isSaving}
                   className="rounded-full h-8"
+                  data-ocid="profile.save_button"
                 >
                   <Save className="w-3.5 h-3.5 mr-1" />
                   {isSaving ? "Saving..." : "Save"}
@@ -139,9 +147,7 @@ export default function Profile() {
         <CardContent className="space-y-4">
           <div className="flex items-center gap-4">
             <Avatar className="w-16 h-16 border-2 border-primary/20">
-              <AvatarImage
-                src={isEditing ? editImageUrl : userProfile?.imageUrl}
-              />
+              <AvatarImage src={profile?.imageUrl} />
               <AvatarFallback className="bg-primary/10 text-primary font-bold text-xl">
                 {initials}
               </AvatarFallback>
@@ -149,12 +155,18 @@ export default function Profile() {
             {!isEditing ? (
               <div>
                 <p className="font-bold text-lg text-foreground">
-                  {userProfile?.nickname || "Anonymous"}
+                  {profile?.nickname || "Anonymous"}
                 </p>
                 <p className="text-sm text-muted-foreground">
                   Principal: {identity?.getPrincipal().toString().slice(0, 12)}
                   ...
                 </p>
+                <div className="flex items-center gap-1.5 mt-1">
+                  <Phone className="w-3.5 h-3.5 text-muted-foreground" />
+                  <p className="text-sm text-muted-foreground">
+                    {mobileNumber.trim() ? mobileNumber : "Not provided"}
+                  </p>
+                </div>
               </div>
             ) : (
               <div className="flex-1 space-y-2">
@@ -165,17 +177,20 @@ export default function Profile() {
                     onChange={(e) => setEditNickname(e.target.value)}
                     className="h-8 text-sm rounded-lg"
                     placeholder="Your name"
+                    data-ocid="profile.input"
                   />
                 </div>
                 <div className="space-y-1">
                   <Label className="text-xs font-semibold">
-                    Profile Picture URL
+                    Mobile Number *
                   </Label>
                   <Input
-                    value={editImageUrl}
-                    onChange={(e) => setEditImageUrl(e.target.value)}
+                    type="tel"
+                    value={editMobileNumber}
+                    onChange={(e) => setEditMobileNumber(e.target.value)}
                     className="h-8 text-sm rounded-lg"
-                    placeholder="https://..."
+                    placeholder="+91 9876543210"
+                    data-ocid="profile.input"
                   />
                 </div>
               </div>
@@ -194,10 +209,10 @@ export default function Profile() {
             <div className="bg-accent/50 rounded-xl p-3 text-center">
               <div className="text-2xl mb-1">🐾</div>
               <p className="text-lg font-bold text-foreground">
-                {userProfile?.recurringDonationAmount &&
-                Number(userProfile.recurringDonationAmount) > 0
+                {profile?.recurringDonationAmount &&
+                Number(profile.recurringDonationAmount) > 0
                   ? `${formatCurrency(
-                      Number(userProfile.recurringDonationAmount) / 100,
+                      Number(profile.recurringDonationAmount) / 100,
                     )}/mo`
                   : "None"}
               </p>
@@ -215,6 +230,7 @@ export default function Profile() {
         variant="outline"
         className="w-full rounded-full font-semibold"
         onClick={() => navigate({ to: "/donation-history" })}
+        data-ocid="profile.secondary_button"
       >
         <History className="w-4 h-4 mr-2" />
         View Donation History

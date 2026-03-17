@@ -10,6 +10,7 @@ export type Option<T> = Some<T> | None;
 export interface DonorProfile {
     nickname: string;
     recurringDonationAmount: bigint;
+    mobileNumber: string;
     anonymous: boolean;
     imageUrl: string;
     totalDonated: bigint;
@@ -52,11 +53,9 @@ export interface backendInterface {
     getCallerUserRole(): Promise<UserRole>;
     getCampaign(campaignId: bigint): Promise<AnimalCampaign | null>;
     getDonationHistory(): Promise<Array<Donation>>;
-    getDonorProfile(): Promise<DonorProfile | null>;
     getRecurringDonations(): Promise<Array<Donation>>;
     getUserProfile(user: Principal): Promise<DonorProfile | null>;
     isCallerAdmin(): Promise<boolean>;
-    registerDonor(profile: DonorProfile): Promise<void>;
     saveCallerUserProfile(profile: DonorProfile): Promise<void>;
     submitDonation(campaignId: bigint, amount: bigint): Promise<string>;
     submitRecurringDonation(campaignId: bigint, amount: bigint): Promise<string>;

@@ -92,6 +92,7 @@ export class ExternalBlob {
 export interface DonorProfile {
     nickname: string;
     recurringDonationAmount: bigint;
+    mobileNumber: string;
     anonymous: boolean;
     imageUrl: string;
     totalDonated: bigint;
@@ -135,11 +136,9 @@ export interface backendInterface {
     getCallerUserRole(): Promise<UserRole>;
     getCampaign(campaignId: bigint): Promise<AnimalCampaign | null>;
     getDonationHistory(): Promise<Array<Donation>>;
-    getDonorProfile(): Promise<DonorProfile | null>;
     getRecurringDonations(): Promise<Array<Donation>>;
     getUserProfile(user: Principal): Promise<DonorProfile | null>;
     isCallerAdmin(): Promise<boolean>;
-    registerDonor(profile: DonorProfile): Promise<void>;
     saveCallerUserProfile(profile: DonorProfile): Promise<void>;
     submitDonation(campaignId: bigint, amount: bigint): Promise<string>;
     submitRecurringDonation(campaignId: bigint, amount: bigint): Promise<string>;
@@ -301,20 +300,6 @@ export class Backend implements backendInterface {
             return result;
         }
     }
-    async getDonorProfile(): Promise<DonorProfile | null> {
-        if (this.processError) {
-            try {
-                const result = await this.actor.getDonorProfile();
-                return from_candid_opt_n3(this._uploadFile, this._downloadFile, result);
-            } catch (e) {
-                this.processError(e);
-                throw new Error("unreachable");
-            }
-        } else {
-            const result = await this.actor.getDonorProfile();
-            return from_candid_opt_n3(this._uploadFile, this._downloadFile, result);
-        }
-    }
     async getRecurringDonations(): Promise<Array<Donation>> {
         if (this.processError) {
             try {
@@ -354,20 +339,6 @@ export class Backend implements backendInterface {
             }
         } else {
             const result = await this.actor.isCallerAdmin();
-            return result;
-        }
-    }
-    async registerDonor(arg0: DonorProfile): Promise<void> {
-        if (this.processError) {
-            try {
-                const result = await this.actor.registerDonor(arg0);
-                return result;
-            } catch (e) {
-                this.processError(e);
-                throw new Error("unreachable");
-            }
-        } else {
-            const result = await this.actor.registerDonor(arg0);
             return result;
         }
     }

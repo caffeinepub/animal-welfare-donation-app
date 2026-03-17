@@ -11,26 +11,30 @@ import { Label } from "@/components/ui/label";
 import { PawPrint } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
+import type { DonorProfile } from "../backend";
 import { useSaveCallerUserProfile } from "../hooks/useQueries";
 
 export default function ProfileSetupModal() {
   const [nickname, setNickname] = useState("");
-  const [imageUrl, setImageUrl] = useState("");
+  const [mobileNumber, setMobileNumber] = useState("");
   const { mutateAsync: saveProfile, isPending } = useSaveCallerUserProfile();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!nickname.trim()) return;
+    if (!nickname.trim() || !mobileNumber.trim()) return;
+
+    const profile: DonorProfile = {
+      nickname: nickname.trim(),
+      imageUrl: "",
+      mobileNumber: mobileNumber.trim(),
+      anonymous: false,
+      totalDonated: BigInt(0),
+      recurringDonationAmount: BigInt(0),
+    };
 
     try {
-      await saveProfile({
-        nickname: nickname.trim(),
-        imageUrl: imageUrl.trim(),
-        anonymous: false,
-        totalDonated: BigInt(0),
-        recurringDonationAmount: BigInt(0),
-      });
-      toast.success("Welcome to PawFund!");
+      await saveProfile(profile);
+      toast.success("Welcome to GOSEVA PASHUPALAK!");
     } catch (_err) {
       toast.error("Failed to save profile. Please try again.");
     }
@@ -48,7 +52,7 @@ export default function ProfileSetupModal() {
               <PawPrint className="w-5 h-5 text-primary-foreground" />
             </div>
             <DialogTitle className="font-serif text-xl">
-              Welcome to PawFund!
+              Welcome to GOSEVA PASHUPALAK!
             </DialogTitle>
           </div>
           <DialogDescription>
@@ -62,31 +66,44 @@ export default function ProfileSetupModal() {
             <Label htmlFor="nickname">Display Name *</Label>
             <Input
               id="nickname"
-              placeholder="e.g. Alex the Animal Lover"
+              placeholder="e.g. Ramesh Sharma"
               value={nickname}
               onChange={(e) => setNickname(e.target.value)}
               required
               className="rounded-lg"
+              data-ocid="profile_setup.input"
             />
           </div>
 
           <div className="space-y-1.5">
-            <Label htmlFor="imageUrl">Profile Picture URL (optional)</Label>
+            <Label htmlFor="mobileNumber">Mobile Number *</Label>
             <Input
-              id="imageUrl"
-              placeholder="https://example.com/avatar.jpg"
-              value={imageUrl}
-              onChange={(e) => setImageUrl(e.target.value)}
+              id="mobileNumber"
+              type="tel"
+              placeholder="+91 9876543210"
+              value={mobileNumber}
+              onChange={(e) => setMobileNumber(e.target.value)}
+              required
               className="rounded-lg"
+              data-ocid="profile_setup.input"
             />
+            {mobileNumber && mobileNumber.trim().length < 10 && (
+              <p
+                className="text-xs text-destructive"
+                data-ocid="profile_setup.error_state"
+              >
+                Please enter a valid mobile number
+              </p>
+            )}
           </div>
 
           <Button
             type="submit"
-            disabled={isPending || !nickname.trim()}
+            disabled={isPending || !nickname.trim() || !mobileNumber.trim()}
             className="w-full rounded-full font-semibold"
+            data-ocid="profile_setup.submit_button"
           >
-            {isPending ? "Saving..." : "Start Helping Animals"}
+            {isPending ? "Saving..." : "Start Seva"}
           </Button>
         </form>
       </DialogContent>

@@ -1,20 +1,19 @@
-# Animal Welfare Donation App
+# GOSEVA PASHUPALAK
 
 ## Current State
-The app has donation campaigns with animal type filters including Dogs, Cats, Birds, Wildlife, Horses, Rabbits, Other.
+The Motoko backend has `DonorProfile` with `mobileNumber: Text`, but the compiled Candid DID file is missing `mobileNumber`. This causes a Candid mismatch when saving profiles.
 
 ## Requested Changes (Diff)
 
 ### Add
-- Nothing new to add
+- Nothing new
 
 ### Modify
-- CampaignFilters: Update ANIMAL_TYPES to only show: All, Cows, Dogs, Cats, Birds
-- Update hero/home text to reference these four specific animals
+- Regenerate backend so the Candid DID includes `mobileNumber` in `DonorProfile`
 
 ### Remove
-- Animal type filter options: Wildlife, Horses, Rabbits, Other
+- Nothing
 
 ## Implementation Plan
-1. Update CampaignFilters.tsx to limit animal types to All, Cows, Dogs, Cats, Birds
-2. Update Home.tsx hero subtitle to reference the four animals
+1. Regenerate Motoko backend with `mobileNumber` in `DonorProfile`
+2. Update frontend to use regenerated types

@@ -29,6 +29,7 @@ export const AnimalCampaign = IDL.Record({
 export const DonorProfile = IDL.Record({
   'nickname' : IDL.Text,
   'recurringDonationAmount' : IDL.Nat,
+  'mobileNumber' : IDL.Text,
   'anonymous' : IDL.Bool,
   'imageUrl' : IDL.Text,
   'totalDonated' : IDL.Nat,
@@ -59,7 +60,6 @@ export const idlService = IDL.Service({
   'getCallerUserRole' : IDL.Func([], [UserRole], ['query']),
   'getCampaign' : IDL.Func([IDL.Nat], [IDL.Opt(AnimalCampaign)], ['query']),
   'getDonationHistory' : IDL.Func([], [IDL.Vec(Donation)], ['query']),
-  'getDonorProfile' : IDL.Func([], [IDL.Opt(DonorProfile)], ['query']),
   'getRecurringDonations' : IDL.Func([], [IDL.Vec(Donation)], ['query']),
   'getUserProfile' : IDL.Func(
       [IDL.Principal],
@@ -67,7 +67,6 @@ export const idlService = IDL.Service({
       ['query'],
     ),
   'isCallerAdmin' : IDL.Func([], [IDL.Bool], ['query']),
-  'registerDonor' : IDL.Func([DonorProfile], [], []),
   'saveCallerUserProfile' : IDL.Func([DonorProfile], [], []),
   'submitDonation' : IDL.Func([IDL.Nat, IDL.Nat], [IDL.Text], []),
   'submitRecurringDonation' : IDL.Func([IDL.Nat, IDL.Nat], [IDL.Text], []),
@@ -97,6 +96,7 @@ export const idlFactory = ({ IDL }) => {
   const DonorProfile = IDL.Record({
     'nickname' : IDL.Text,
     'recurringDonationAmount' : IDL.Nat,
+    'mobileNumber' : IDL.Text,
     'anonymous' : IDL.Bool,
     'imageUrl' : IDL.Text,
     'totalDonated' : IDL.Nat,
@@ -127,7 +127,6 @@ export const idlFactory = ({ IDL }) => {
     'getCallerUserRole' : IDL.Func([], [UserRole], ['query']),
     'getCampaign' : IDL.Func([IDL.Nat], [IDL.Opt(AnimalCampaign)], ['query']),
     'getDonationHistory' : IDL.Func([], [IDL.Vec(Donation)], ['query']),
-    'getDonorProfile' : IDL.Func([], [IDL.Opt(DonorProfile)], ['query']),
     'getRecurringDonations' : IDL.Func([], [IDL.Vec(Donation)], ['query']),
     'getUserProfile' : IDL.Func(
         [IDL.Principal],
@@ -135,7 +134,6 @@ export const idlFactory = ({ IDL }) => {
         ['query'],
       ),
     'isCallerAdmin' : IDL.Func([], [IDL.Bool], ['query']),
-    'registerDonor' : IDL.Func([DonorProfile], [], []),
     'saveCallerUserProfile' : IDL.Func([DonorProfile], [], []),
     'submitDonation' : IDL.Func([IDL.Nat, IDL.Nat], [IDL.Text], []),
     'submitRecurringDonation' : IDL.Func([IDL.Nat, IDL.Nat], [IDL.Text], []),

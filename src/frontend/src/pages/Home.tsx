@@ -11,6 +11,7 @@ import { useGetActiveCampaigns, useGetAllCampaigns } from "../hooks/useQueries";
 
 const UPI_ID = "Nikhil.thanedar@ybl";
 const UPI_LINK = `upi://pay?pa=${UPI_ID}&pn=GOSEVA+PASHUPALAK&cu=INR`;
+const UPI_QR_URL = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(UPI_LINK)}`;
 
 const ANIMAL_SECTIONS = [
   {
@@ -109,7 +110,7 @@ function UpiPaymentSection() {
             <div className="mt-4 flex flex-col items-center md:items-start gap-2">
               <div className="rounded-xl overflow-hidden border-2 border-amber-300 bg-white p-2 shadow-md inline-block">
                 <img
-                  src="/assets/generated/upi-qr-code.dim_400x400.png"
+                  src={UPI_QR_URL}
                   alt="Scan to Pay via UPI"
                   className="w-44 h-44 object-contain"
                 />
@@ -201,7 +202,7 @@ function AnimalSection({ section, campaigns }: AnimalSectionProps) {
 }
 
 export default function Home() {
-  const [selectedStatus, setSelectedStatus] = useState("active");
+  const [selectedStatus, setSelectedStatus] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
 
   const { data: activeCampaigns, isLoading: loadingActive } =

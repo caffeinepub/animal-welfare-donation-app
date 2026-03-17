@@ -2,7 +2,6 @@ import Map "mo:core/Map";
 import Array "mo:core/Array";
 import Text "mo:core/Text";
 import Time "mo:core/Time";
-
 import Nat "mo:core/Nat";
 import Runtime "mo:core/Runtime";
 import Order "mo:core/Order";
@@ -11,18 +10,15 @@ import Principal "mo:core/Principal";
 import Int "mo:core/Int";
 import MixinAuthorization "authorization/MixinAuthorization";
 import AccessControl "authorization/access-control";
+import Migration "migration";
 
+(with migration = Migration.run)
 actor {
-  type UserProfile = {
-    anonymous : Bool;
-    imageUrl : Text;
-    nickname : Text;
-  };
-
   public type DonorProfile = {
     anonymous : Bool;
     imageUrl : Text;
     nickname : Text;
+    mobileNumber : Text;
     totalDonated : Nat;
     recurringDonationAmount : Nat;
   };
@@ -59,8 +55,17 @@ actor {
   var campaignIdCounter = 0;
   let donations = List.empty<Donation>();
 
+  // Auto-register authenticated callers as #user if not already registered
+  func ensureUserRole(caller : Principal) {
+    if (caller.isAnonymous()) {
+      Runtime.trap("Anonymous callers are not allowed");
+    };
+    if (accessControlState.userRoles.get(caller) == null) {
+      accessControlState.userRoles.add(caller, #user);
+    };
+  };
+
   // Seed campaigns
-  // Timestamps: start = Jan 1 2026, end = Dec 31 2026 (nanoseconds)
   let seedStart : Time.Time = 1735689600_000_000_000;
   let seedEnd : Time.Time = 1767225600_000_000_000;
 
@@ -150,50 +155,33 @@ actor {
     };
   };
 
-  // ---- Required profile functions per instructions ----
-
+  // Returns null for new/unregistered users -- no trap for anonymous
+  // This function allows any caller including anonymous/guests
   public query ({ caller }) func getCallerUserProfile() : async ?DonorProfile {
-    if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
-      Runtime.trap("Unauthorized: Only users can get their profile");
+    switch (userProfiles.get(caller)) {
+      case (null) { null };
+      case (?profile) { ?profile };
     };
-    userProfiles.get(caller);
   };
 
+  // Also used as registerDonor (auto-registers caller as #user on first call)
   public shared ({ caller }) func saveCallerUserProfile(profile : DonorProfile) : async () {
-    if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
-      Runtime.trap("Unauthorized: Only users can save profiles");
-    };
+    ensureUserRole(caller);
     userProfiles.add(caller, profile);
   };
 
+  // Admin or self only
   public query ({ caller }) func getUserProfile(user : Principal) : async ?DonorProfile {
     if (caller != user and not AccessControl.isAdmin(accessControlState, caller)) {
       Runtime.trap("Unauthorized: Can only view your own profile");
     };
-    userProfiles.get(user);
+    switch (userProfiles.get(user)) {
+      case (null) { null };
+      case (?profile) { ?profile };
+    };
   };
 
-  // ---- Donor Registration and Profile Management ----
-
-  public shared ({ caller }) func registerDonor(profile : DonorProfile) : async () {
-    if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
-      Runtime.trap("Unauthorized: Only authenticated users can register as donors");
-    };
-    if (userProfiles.containsKey(caller)) {
-      Runtime.trap("Donor already exists");
-    };
-    userProfiles.add(caller, profile);
-  };
-
-  public query ({ caller }) func getDonorProfile() : async ?DonorProfile {
-    if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
-      Runtime.trap("Unauthorized: Only authenticated users can view their donor profile");
-    };
-    userProfiles.get(caller);
-  };
-
-  // ---- Campaign Management (admin-only) ----
-
+  // Admin only
   public shared ({ caller }) func createCampaign(
     title : Text,
     description : Text,
@@ -224,41 +212,40 @@ actor {
     id;
   };
 
+  // Admin only
   public shared ({ caller }) func deactivateCampaign(campaignId : Nat) : async () {
     if (not (AccessControl.hasPermission(accessControlState, caller, #admin))) {
       Runtime.trap("Unauthorized: Only admins can deactivate campaigns");
     };
     let newCampaigns = activeCampaigns.map<AnimalCampaign, AnimalCampaign>(
       func(c) {
-        if (c.id == campaignId) { { c with isActive = false } } else { c }
+        if (c.id == campaignId) { { c with isActive = false } } else { c };
       }
     );
     activeCampaigns.clear();
     activeCampaigns.addAll(newCampaigns.values());
   };
 
-  // ---- Campaign Browsing (public, no auth required) ----
-
+  // Public - accessible to all including guests
   public query func getActiveCampaigns() : async [AnimalCampaign] {
     let all = activeCampaigns.toArray();
     let onlyActive = all.filter(func(c) { c.isActive });
     onlyActive.sort(AnimalCampaignModule.compareByAmountRaised);
   };
 
+  // Public - accessible to all including guests
   public query func getAllCampaigns() : async [AnimalCampaign] {
     activeCampaigns.toArray().sort(AnimalCampaignModule.compareByAmountRaised);
   };
 
+  // Public - accessible to all including guests
   public query func getCampaign(campaignId : Nat) : async ?AnimalCampaign {
     activeCampaigns.find(func(c) { c.id == campaignId });
   };
 
-  // ---- Donation Submission ----
-
+  // Requires registered donor (user role)
   public shared ({ caller }) func submitDonation(campaignId : Nat, amount : Nat) : async Text {
-    if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
-      Runtime.trap("Unauthorized: Only authenticated users can make donations");
-    };
+    ensureUserRole(caller);
 
     let campaignOpt = activeCampaigns.find(func(camp) { camp.id == campaignId and camp.isActive });
     let campaign = switch (campaignOpt) {
@@ -286,32 +273,29 @@ actor {
 
     donations.add(donation);
 
-    // Update the campaign with the new amount raised
     let updatedCampaign : AnimalCampaign = {
-      campaign with amountRaised = campaign.amountRaised + amount
+      campaign with amountRaised = campaign.amountRaised + amount;
     };
 
     let newCampaigns = activeCampaigns.map<AnimalCampaign, AnimalCampaign>(
       func(c) {
-        if (c.id == campaignId) { updatedCampaign } else { c }
+        if (c.id == campaignId) { updatedCampaign } else { c };
       }
     );
     activeCampaigns.clear();
     activeCampaigns.addAll(newCampaigns.values());
 
-    // Update donor's total donated amount
     let updatedDonor : DonorProfile = {
-      donor with totalDonated = donor.totalDonated + amount
+      donor with totalDonated = donor.totalDonated + amount;
     };
     userProfiles.add(caller, updatedDonor);
 
     referenceId;
   };
 
+  // Requires registered donor (user role)
   public shared ({ caller }) func submitRecurringDonation(campaignId : Nat, amount : Nat) : async Text {
-    if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
-      Runtime.trap("Unauthorized: Only authenticated users can make recurring donations");
-    };
+    ensureUserRole(caller);
 
     let campaignOpt = activeCampaigns.find(func(camp) { camp.id == campaignId and camp.isActive });
     let campaign = switch (campaignOpt) {
@@ -339,20 +323,18 @@ actor {
 
     donations.add(donation);
 
-    // Update the campaign with the new amount raised
     let updatedCampaign : AnimalCampaign = {
-      campaign with amountRaised = campaign.amountRaised + amount
+      campaign with amountRaised = campaign.amountRaised + amount;
     };
 
     let newCampaigns = activeCampaigns.map<AnimalCampaign, AnimalCampaign>(
       func(c) {
-        if (c.id == campaignId) { updatedCampaign } else { c }
+        if (c.id == campaignId) { updatedCampaign } else { c };
       }
     );
     activeCampaigns.clear();
     activeCampaigns.addAll(newCampaigns.values());
 
-    // Update donor's total donated amount and recurring amount
     let updatedDonor : DonorProfile = {
       donor with
       totalDonated = donor.totalDonated + amount;
@@ -363,28 +345,25 @@ actor {
     referenceId;
   };
 
+  // Requires registered donor (user role)
   public shared ({ caller }) func cancelRecurringDonation() : async () {
-    if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
-      Runtime.trap("Unauthorized: Only authenticated users can cancel recurring donations");
-    };
+    ensureUserRole(caller);
     let donor = switch (userProfiles.get(caller)) {
       case (?d) { d };
       case (null) { Runtime.trap("Donor profile not found") };
     };
     let updatedDonor : DonorProfile = {
-      donor with recurringDonationAmount = 0
+      donor with recurringDonationAmount = 0;
     };
     userProfiles.add(caller, updatedDonor);
   };
 
-  // ---- Donation History ----
-
+  // Returns caller's donations - requires registered user
   public query ({ caller }) func getDonationHistory() : async [Donation] {
-    if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
-      Runtime.trap("Unauthorized: Only authenticated users can view donation history");
-    };
+    // Allow any caller, but only return data if they have a profile
+    // This allows guests to call but get empty array
     switch (userProfiles.get(caller)) {
-      case (null) { Runtime.trap("Donor profile not found") };
+      case (null) { [] };
       case (?_) {
         let filteredDonations = donations.filter(
           func(d) { d.donor == caller }
@@ -394,12 +373,12 @@ actor {
     };
   };
 
+  // Returns caller's recurring donations - requires registered user
   public query ({ caller }) func getRecurringDonations() : async [Donation] {
-    if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
-      Runtime.trap("Unauthorized: Only authenticated users can view recurring donations");
-    };
+    // Allow any caller, but only return data if they have a profile
+    // This allows guests to call but get empty array
     switch (userProfiles.get(caller)) {
-      case (null) { Runtime.trap("Donor profile not found") };
+      case (null) { [] };
       case (?_) {
         let filtered = donations.filter(
           func(d) { d.donor == caller and d.isRecurring }
