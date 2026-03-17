@@ -1,0 +1,97 @@
+{
+  "kind": "spec_vs_diff_report",
+  "version": "1.0",
+  "generatedAt": "2026-03-16T16:40:12.154Z",
+  "summary": "The diff implements most of the requested requirements including Internet Identity auth, donor profiles, campaign listings with filtering, donation submission, recurring donations, donation history with receipts, campaign progress tracking, and the static asset usage. Several acceptance criteria gaps exist, most notably the backend Donation type lacks a separate 'nextDueDate' field for recurring donations, the DonorProfile lacks a 'contactEmail' field making email display/editing impossible, the RecurringDonationsList cancel function does not pass a donation identifier, and the profile setup modal does not collect email.",
+  "missing_requirements": [
+    {
+      "id": "REQ-2",
+      "requirement": "Donor profile includes contact email field; donors can edit their contact email; profile page displays email",
+      "reason": "The DonorProfile type in backend/main.mo has no 'email' or 'contactEmail' field. The ProfileSetupModal and profile editing UI shown in the diff do not include an email input. Email cannot be stored, displayed, or edited as required.",
+      "evidence": [
+        "backend/main.mo",
+        "frontend/src/components/ProfileSetupModal.tsx"
+      ]
+    },
+    {
+      "id": "REQ-5",
+      "requirement": "Recurring donations are stored with a frequency field (monthly) and a next-due date",
+      "reason": "The Donation type in backend/main.mo has an 'isRecurring' boolean but no explicit 'frequency' field and no 'nextDueDate' field. The recurring donation feature is partially implemented but missing these required stored fields.",
+      "evidence": [
+        "backend/main.mo",
+        "frontend/src/hooks/useQueries.ts"
+      ]
+    },
+    {
+      "id": "REQ-5",
+      "requirement": "Donors can cancel a specific recurring donation from their profile",
+      "reason": "The useCancelRecurringDonation mutation and RecurringDonationsList handleCancel call cancelRecurring() with no arguments, making it impossible to cancel a specific recurring donation at the backend level.",
+      "evidence": [
+        "frontend/src/components/RecurringDonationsList.tsx",
+        "frontend/src/hooks/useQueries.ts"
+      ]
+    },
+    {
+      "id": "REQ-8",
+      "requirement": "Hero banner image (pawfund-hero.dim_1200x400.png) displayed prominently on the home page",
+      "reason": "The Home page file was listed as omitted from the diff due to size limits. There is no evidence in the provided diff that the hero banner is rendered on the home page.",
+      "evidence": []
+    }
+  ],
+  "hallucinated_features": [
+    {
+      "description": "Full dark mode CSS theme with a .dark variant defining all color variables",
+      "reason": "The build request only specifies a warm, earthy light theme. A complete dark mode theme was implemented in index.css without being requested.",
+      "evidence": [
+        "frontend/src/index.css"
+      ]
+    },
+    {
+      "description": "Admin-only campaign creation with MixinAuthorization and AccessControl access control system",
+      "reason": "The build request explicitly lists admin panel for campaign management as a non-goal. The backend implements admin-gated createCampaign with a full access control system that was not requested.",
+      "evidence": [
+        "backend/main.mo"
+      ]
+    },
+    {
+      "description": "caffeineAdminToken secret parameter injection via URL params for actor initialization",
+      "reason": "The useActor hook reads a caffeineAdminToken from URL parameters and calls _initializeAccessControlWithSecret. This admin token mechanism was not requested.",
+      "evidence": [
+        "frontend/src/hooks/useActor.ts"
+      ]
+    }
+  ],
+  "confidence": 0.72,
+  "changed_files": [
+    "all_files_summary.json",
+    "backend/main.mo",
+    "frontend-file-summaries.txt",
+    "frontend/index.css",
+    "frontend/index.html",
+    "frontend/src/App.tsx",
+    "frontend/src/components/CampaignCard.tsx",
+    "frontend/src/components/CampaignFilters.tsx",
+    "frontend/src/components/CampaignProgress.tsx",
+    "frontend/src/components/DonationForm.tsx",
+    "frontend/src/components/DonationHistoryList.tsx",
+    "frontend/src/components/DonationSuccessModal.tsx",
+    "frontend/src/components/Layout.tsx",
+    "frontend/src/components/ProfileSetupModal.tsx",
+    "frontend/src/components/ReceiptModal.tsx",
+    "frontend/src/components/RecentDonors.tsx",
+    "frontend/src/components/RecurringDonationsList.tsx",
+    "frontend/src/hooks/useActor.ts",
+    "frontend/src/hooks/useInternetIdentity.ts",
+    "frontend/src/hooks/useQueries.ts",
+    "frontend/src/index.css",
+    "frontend/src/lib/utils.ts",
+    "frontend/src/main.tsx",
+    "frontend/src/pages/CampaignDetail.tsx",
+    "frontend/src/pages/DonationHistory.tsx",
+    "frontend/src/pages/Home.tsx",
+    "frontend/src/pages/Profile.tsx",
+    "frontend/src/utils/urlParams.ts",
+    "frontend/tailwind.config.js",
+    "project_state.json"
+  ]
+}

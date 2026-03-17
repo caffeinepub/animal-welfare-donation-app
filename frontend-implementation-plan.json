@@ -1,0 +1,289 @@
+{
+  "kind": "implementation_plan",
+  "version": "1.0",
+  "title": "PawFund Animal Welfare Donation Platform - Frontend Implementation",
+  "requirements": [
+    {
+      "id": "REQ-1",
+      "summary": "Design and apply warm, compassionate visual theme with earthy tones, friendly typography, and card-based layouts",
+      "acceptanceCriteria": [
+        "All pages share a consistent color palette using earthy/warm tones",
+        "Typography is readable and friendly-looking",
+        "Card-based layouts are used for campaigns and donor information",
+        "No inconsistent or clashing color usage across pages"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/index.css",
+          "operation": "modify",
+          "description": "Define CSS custom properties for warm amber (#D97706, #F59E0B), soft greens (#10B981, #34D399), and creamy whites (#FFFBEB, #FEF3C7). Add global styles for card shadows and rounded corners."
+        },
+        {
+          "path": "frontend/tailwind.config.js",
+          "operation": "modify",
+          "description": "Extend the Tailwind theme to include custom colors (warmAmber, softGreen, creamyWhite) and configure rounded typography with friendly font families. Set default border radius for cards."
+        },
+        {
+          "path": "frontend/src/components/Layout.tsx",
+          "operation": "create",
+          "description": "Create a Layout component that wraps all pages with consistent warm-toned background, navigation bar with logo, and footer. Apply earthy color scheme and rounded typography throughout."
+        }
+      ]
+    },
+    {
+      "id": "REQ-2",
+      "summary": "Implement donor registration and profile management with Internet Identity authentication",
+      "acceptanceCriteria": [
+        "Donors can register and log in via Internet Identity",
+        "Profile page displays name, avatar, email, and total donated amount",
+        "Donors can edit their display name and contact email",
+        "Profile data is persisted in the backend"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/components/LoginButton.tsx",
+          "operation": "create",
+          "description": "Use the authorization component to implement login/logout functionality with Internet Identity. Handle authentication state and clear query cache on logout. Verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/components/ProfileSetupModal.tsx",
+          "operation": "create",
+          "description": "Use the authorization component to create a modal that appears when a new user logs in without a profile. Collect display name, profile picture URL, and contact email. Call saveCallerUserProfile to persist. Verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/hooks/useGetCallerUserProfile.ts",
+          "operation": "create",
+          "description": "Use the authorization component to create a custom hook that fetches the current user's profile using getCallerUserProfile. Handle actor availability and prevent flash of profile setup modal. Verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/hooks/useSaveCallerUserProfile.ts",
+          "operation": "create",
+          "description": "Use the authorization component to create a mutation hook that saves the current user's profile using saveCallerUserProfile. Invalidate the currentUserProfile query on success. Verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/pages/Profile.tsx",
+          "operation": "create",
+          "description": "Create a profile page displaying the donor's nickname, avatar, email, and total donations. Include an edit form for updating display name and email. Use card-based layout with warm tones. Guard this page to require authentication."
+        },
+        {
+          "path": "frontend/src/App.tsx",
+          "operation": "modify",
+          "description": "Wire the ProfileSetupModal to appear after login when user profile is null. Add route for /profile page. Ensure authentication check wraps protected routes."
+        }
+      ]
+    },
+    {
+      "id": "REQ-3",
+      "summary": "Implement animal welfare campaign listings with filtering and detail views",
+      "acceptanceCriteria": [
+        "A browsable list of campaigns is shown on the home/discover page",
+        "Each campaign card shows title, category, cover image, progress bar, and amount raised vs goal",
+        "Clicking a campaign opens a detail page with full description and donation CTA",
+        "Campaigns can be filtered by category and status (active/completed)"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/hooks/useGetActiveCampaigns.ts",
+          "operation": "create",
+          "description": "Create a query hook that fetches active campaigns using getActiveCampaigns. Return array of AnimalCampaign objects."
+        },
+        {
+          "path": "frontend/src/hooks/useGetAllCampaigns.ts",
+          "operation": "create",
+          "description": "Create a query hook that fetches all campaigns using getAllCampaigns. Return array of AnimalCampaign objects for filtering by status."
+        },
+        {
+          "path": "frontend/src/components/CampaignCard.tsx",
+          "operation": "create",
+          "description": "Create a card component for displaying campaign summary: cover image, title, category, progress bar (amountRaised/fundraisingGoal), and amounts. Use warm-toned card styling with rounded corners and gentle shadows. Make clickable to navigate to detail page."
+        },
+        {
+          "path": "frontend/src/components/CampaignFilters.tsx",
+          "operation": "create",
+          "description": "Create a filter component with dropdowns/buttons for animal type categories and active/completed status. Style with earthy tones."
+        },
+        {
+          "path": "frontend/src/pages/Home.tsx",
+          "operation": "create",
+          "description": "Create the home page displaying the hero banner at frontend/public/assets/generated/pawfund-hero.dim_1200x400.png above a grid of CampaignCard components. Include CampaignFilters. Fetch campaigns using useGetActiveCampaigns or useGetAllCampaigns based on filters. Use warm color scheme throughout."
+        },
+        {
+          "path": "frontend/src/pages/CampaignDetail.tsx",
+          "operation": "create",
+          "description": "Create campaign detail page showing full campaign info: cover image, title, description, category, dates, progress tracking (see REQ-7), and donation form. Use card layout with warm tones. Route parameter for campaign ID."
+        },
+        {
+          "path": "frontend/src/App.tsx",
+          "operation": "modify",
+          "description": "Add routes for / (Home) and /campaign/:id (CampaignDetail). Wrap app with Layout component for consistent navigation."
+        }
+      ]
+    },
+    {
+      "id": "REQ-4",
+      "summary": "Implement donation submission for campaigns with authentication requirement and success confirmation",
+      "acceptanceCriteria": [
+        "Donors can enter a custom donation amount and submit it on any active campaign's detail page",
+        "Donation is recorded in the backend with all required fields",
+        "Campaign's 'amount raised' is updated immediately after donation",
+        "A success confirmation is shown to the donor after donating",
+        "Anonymous (not logged in) users are prompted to log in before donating"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/hooks/useSubmitDonation.ts",
+          "operation": "create",
+          "description": "Create a mutation hook that calls submitDonation with campaignId and amount. Return transaction reference ID on success. Invalidate campaign queries to refresh amount raised."
+        },
+        {
+          "path": "frontend/src/components/DonationForm.tsx",
+          "operation": "create",
+          "description": "Create a form component with amount input, validation, and submit button. Check authentication status before submission; prompt login if not authenticated. Call useSubmitDonation on submit. Style with warm tones and rounded inputs."
+        },
+        {
+          "path": "frontend/src/components/DonationSuccessModal.tsx",
+          "operation": "create",
+          "description": "Create a success modal displaying confirmation message, transaction reference ID, and donated amount. Style with warm color palette."
+        },
+        {
+          "path": "frontend/src/pages/CampaignDetail.tsx",
+          "operation": "modify",
+          "description": "Integrate DonationForm component. Show DonationSuccessModal after successful donation. Ensure form is disabled for completed campaigns."
+        }
+      ]
+    },
+    {
+      "id": "REQ-5",
+      "summary": "Implement recurring donation support with toggle option and cancellation from profile",
+      "acceptanceCriteria": [
+        "Donation form includes a toggle/checkbox for 'Make this a monthly donation'",
+        "Recurring donations are stored with frequency and next-due date",
+        "Donor profile lists active recurring donations with campaign name and amount",
+        "Donors can cancel a recurring donation from their profile"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/hooks/useSubmitRecurringDonation.ts",
+          "operation": "create",
+          "description": "Create a mutation hook that calls submitRecurringDonation with campaignId and amount. Invalidate recurring donation queries on success."
+        },
+        {
+          "path": "frontend/src/hooks/useGetRecurringDonations.ts",
+          "operation": "create",
+          "description": "Create a query hook that fetches recurring donations using getRecurringDonations. Return array of Donation objects with isRecurring=true."
+        },
+        {
+          "path": "frontend/src/hooks/useCancelRecurringDonation.ts",
+          "operation": "create",
+          "description": "Create a mutation hook that calls cancelRecurringDonation. Invalidate recurring donation and profile queries on success."
+        },
+        {
+          "path": "frontend/src/components/DonationForm.tsx",
+          "operation": "modify",
+          "description": "Add a toggle/checkbox for recurring donation option. Conditionally call useSubmitRecurringDonation instead of useSubmitDonation when toggled. Style toggle with warm colors."
+        },
+        {
+          "path": "frontend/src/components/RecurringDonationsList.tsx",
+          "operation": "create",
+          "description": "Create a component listing active recurring donations with campaign name, amount, and cancel button. Use card styling. Call useCancelRecurringDonation on cancel action."
+        },
+        {
+          "path": "frontend/src/pages/Profile.tsx",
+          "operation": "modify",
+          "description": "Add RecurringDonationsList component to the profile page below user info. Fetch data using useGetRecurringDonations."
+        }
+      ]
+    },
+    {
+      "id": "REQ-6",
+      "summary": "Implement donation history page with chronological listing and receipt view",
+      "acceptanceCriteria": [
+        "Donation history page is accessible from the donor's profile",
+        "Each entry shows campaign name, amount donated, date, and transaction reference",
+        "Entries are sorted newest-first",
+        "A 'View Receipt' action shows a receipt detail view with all donation info"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/hooks/useGetDonationHistory.ts",
+          "operation": "create",
+          "description": "Create a query hook that fetches donation history using getDonationHistory. Return array of Donation objects sorted by timestamp descending."
+        },
+        {
+          "path": "frontend/src/components/DonationHistoryList.tsx",
+          "operation": "create",
+          "description": "Create a component displaying donation history in card format. Each entry shows campaign name, amount, date, and transaction reference. Include 'View Receipt' button. Style with warm tones."
+        },
+        {
+          "path": "frontend/src/components/ReceiptModal.tsx",
+          "operation": "create",
+          "description": "Create a modal displaying receipt details: transaction reference, campaign name, amount, date, donor name. Style as a printable receipt with warm branding."
+        },
+        {
+          "path": "frontend/src/pages/DonationHistory.tsx",
+          "operation": "create",
+          "description": "Create donation history page displaying DonationHistoryList. Fetch data using useGetDonationHistory. Guard page to require authentication. Use card-based layout."
+        },
+        {
+          "path": "frontend/src/App.tsx",
+          "operation": "modify",
+          "description": "Add route for /donation-history page. Add navigation link from Profile page to donation history."
+        },
+        {
+          "path": "frontend/src/pages/Profile.tsx",
+          "operation": "modify",
+          "description": "Add a 'View Donation History' link/button that navigates to /donation-history."
+        }
+      ]
+    },
+    {
+      "id": "REQ-7",
+      "summary": "Implement campaign progress tracking view with visual progress bar, donor count, and days remaining",
+      "acceptanceCriteria": [
+        "Progress bar visually fills based on amount raised / goal",
+        "Percentage, total raised, and goal amount are displayed numerically",
+        "Total donor count is shown",
+        "Days remaining is calculated and displayed for campaigns with an end date",
+        "Recent donors section lists up to 10 most recent donor names"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/components/CampaignProgress.tsx",
+          "operation": "create",
+          "description": "Create a component displaying campaign progress: visual progress bar (percentage filled), numeric percentage, total raised, goal amount, and days remaining. Calculate days remaining from endDate. Style progress bar with warm amber fill and soft green background."
+        },
+        {
+          "path": "frontend/src/components/RecentDonors.tsx",
+          "operation": "create",
+          "description": "Create a component listing up to 10 recent donors by name. Fetch donation history and filter by campaign, then display donor names. Handle anonymous donors. Style with card layout."
+        },
+        {
+          "path": "frontend/src/pages/CampaignDetail.tsx",
+          "operation": "modify",
+          "description": "Integrate CampaignProgress and RecentDonors components into the campaign detail page layout. Position them prominently near the donation form."
+        }
+      ]
+    },
+    {
+      "id": "REQ-8",
+      "summary": "Render generated hero banner and app logo as static assets in header and home page",
+      "acceptanceCriteria": [
+        "Logo appears in the top navigation bar on all pages",
+        "Hero banner is displayed prominently on the home/discover page",
+        "Images are loaded from frontend/public/assets/generated/"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/components/Layout.tsx",
+          "operation": "modify",
+          "description": "Add the logo image at frontend/public/assets/generated/pawfund-logo.dim_256x256.png to the navigation bar header. Ensure it appears on all pages via the Layout wrapper."
+        },
+        {
+          "path": "frontend/src/pages/Home.tsx",
+          "operation": "modify",
+          "description": "Add the hero banner image at frontend/public/assets/generated/pawfund-hero.dim_1200x400.png at the top of the home page above campaign listings. Use full-width display with proper aspect ratio."
+        }
+      ]
+    }
+  ]
+}

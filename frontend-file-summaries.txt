@@ -1,0 +1,22 @@
+{
+  "frontend/src/index.css": "Global styles with warm earthy OKLCH color system (amber primary, sage green secondary, creamy background), custom fonts (Nunito + Lora), and utility classes for card shadows and paw gradient.",
+  "frontend/tailwind.config.js": "Extended Tailwind config with Nunito/Lora font families, warm earthy color tokens, custom border radii, card shadow variants, and fade-in animation.",
+  "frontend/src/hooks/useQueries.ts": "All React Query hooks for backend operations: user profile CRUD, campaign fetching, donation submission (one-time and recurring), cancellation, and history retrieval with proper cache invalidation.",
+  "frontend/src/App.tsx": "Main app with TanStack Router setup (code-based routing), root layout with auth-aware profile setup modal, and routes for Home, CampaignDetail, Profile, and DonationHistory pages.",
+  "frontend/src/components/Layout.tsx": "Full-page layout wrapper with sticky header (logo, nav links, auth dropdown), responsive mobile menu, and branded footer with caffeine.ai attribution.",
+  "frontend/src/components/ProfileSetupModal.tsx": "Modal dialog for first-time login profile setup, collecting display name and avatar URL, persisted via saveCallerUserProfile.",
+  "frontend/src/components/CampaignCard.tsx": "Clickable campaign summary card showing cover image, title, animal type badge, progress bar, raised/goal amounts, and days remaining.",
+  "frontend/src/components/CampaignFilters.tsx": "Filter bar with status buttons (All/Active/Completed) and animal type badge filters for the campaign listing page.",
+  "frontend/src/components/CampaignProgress.tsx": "Visual progress tracker showing progress bar, percentage, raised amount, goal, donor count, and days remaining with urgency indicators.",
+  "frontend/src/components/RecentDonors.tsx": "Card listing up to 10 most recent donors for a campaign with avatar, name, date, and amount.",
+  "frontend/src/components/DonationForm.tsx": "Donation form with preset amounts, custom input, recurring toggle, auth gate, and submission via one-time or recurring mutation hooks.",
+  "frontend/src/components/DonationSuccessModal.tsx": "Success confirmation modal showing campaign name, amount, recurring status, and copyable transaction reference ID.",
+  "frontend/src/components/RecurringDonationsList.tsx": "Profile section listing active recurring donations with campaign names, amounts, and cancel button.",
+  "frontend/src/components/DonationHistoryList.tsx": "Chronological donation history list with campaign name, amount, date, reference ID, and receipt button per entry.",
+  "frontend/src/components/ReceiptModal.tsx": "Receipt detail modal showing full donation info (donor, campaign, amount, date, reference) with copy functionality.",
+  "frontend/src/lib/utils.ts": "Utility functions for class merging, currency formatting (cents to USD), ICP timestamp formatting, days remaining calculation, and animal emoji mapping.",
+  "frontend/src/pages/Home.tsx": "Home page with hero banner, search input, campaign filters, and responsive grid of CampaignCard components with loading skeletons.",
+  "frontend/src/pages/CampaignDetail.tsx": "Campaign detail page with cover image, description, progress tracking, recent donors, and donation form with success modal integration.",
+  "frontend/src/pages/Profile.tsx": "Authenticated donor profile page with editable name/avatar, total donated stats, recurring donations list, and navigation to donation history.",
+  "frontend/src/pages/DonationHistory.tsx": "Authenticated donation history page with chronological list, receipt modal, and back navigation to profile."
+}

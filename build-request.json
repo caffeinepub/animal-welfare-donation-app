@@ -1,0 +1,157 @@
+{
+  "kind": "build_request",
+  "title": "Animal Welfare Donation Platform",
+  "projectName": "PawFund",
+  "priority": "normal",
+  "requirements": [
+    {
+      "id": "REQ-1",
+      "text": "Design and apply a warm, compassionate visual theme throughout the app — earthy tones (warm ambers, soft greens, creamy whites), friendly rounded typography, card-based layout with gentle shadows, and nature/animal-inspired accent details. Apply consistently across all pages.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-2"
+        ]
+      },
+      "acceptanceCriteria": [
+        "All pages share a consistent color palette using earthy/warm tones",
+        "Typography is readable and friendly-looking",
+        "Card-based layouts are used for campaigns and donor information",
+        "No inconsistent or clashing color usage across pages"
+      ]
+    },
+    {
+      "id": "REQ-2",
+      "text": "Implement donor registration and profile management. Donors can sign up and log in using Internet Identity. Profile includes display name, profile picture (URL), contact email, and total lifetime donations.",
+      "target": "both",
+      "source": {
+        "messageIds": [
+          "msg-2"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Donors can register and log in via Internet Identity",
+        "Profile page displays name, avatar, email, and total donated amount",
+        "Donors can edit their display name and contact email",
+        "Profile data is persisted in the backend"
+      ]
+    },
+    {
+      "id": "REQ-3",
+      "text": "Implement animal welfare campaign/cause listings. Each campaign has a title, description, target animal/cause category (e.g., stray dogs, wildlife rescue, shelter cats), cover image URL, fundraising goal, amount raised, start date, end date, and active/completed status.",
+      "target": "both",
+      "source": {
+        "messageIds": [
+          "msg-2"
+        ]
+      },
+      "acceptanceCriteria": [
+        "A browsable list of campaigns is shown on the home/discover page",
+        "Each campaign card shows title, category, cover image, progress bar, and amount raised vs goal",
+        "Clicking a campaign opens a detail page with full description and donation CTA",
+        "Campaigns can be filtered by category and status (active/completed)"
+      ]
+    },
+    {
+      "id": "REQ-4",
+      "text": "Implement donation submission for campaigns. Donors can make a one-time donation of a chosen amount to any active campaign. Record each donation with donor ID, campaign ID, amount (in USD), timestamp, and a transaction reference ID. Update the campaign's total raised amount upon successful donation.",
+      "target": "both",
+      "source": {
+        "messageIds": [
+          "msg-2"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Donors can enter a custom donation amount and submit it on any active campaign's detail page",
+        "Donation is recorded in the backend with all required fields",
+        "Campaign's 'amount raised' is updated immediately after donation",
+        "A success confirmation is shown to the donor after donating",
+        "Anonymous (not logged in) users are prompted to log in before donating"
+      ]
+    },
+    {
+      "id": "REQ-5",
+      "text": "Implement recurring donation support. Donors can opt into a monthly recurring donation when submitting. Recurring donations are stored with a frequency field (monthly) and a next-due date. Display active recurring donations on the donor's profile page with the option to cancel.",
+      "target": "both",
+      "source": {
+        "messageIds": [
+          "msg-2"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Donation form includes a toggle/checkbox for 'Make this a monthly donation'",
+        "Recurring donations are stored with frequency and next-due date",
+        "Donor profile lists active recurring donations with campaign name and amount",
+        "Donors can cancel a recurring donation from their profile"
+      ]
+    },
+    {
+      "id": "REQ-6",
+      "text": "Implement a donation history page for logged-in donors. Display a chronological list of all past donations made by the donor, showing campaign name, amount, date, and a downloadable/viewable receipt stub with a unique transaction reference.",
+      "target": "both",
+      "source": {
+        "messageIds": [
+          "msg-2"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Donation history page is accessible from the donor's profile",
+        "Each entry shows campaign name, amount donated, date, and transaction reference",
+        "Entries are sorted newest-first",
+        "A 'View Receipt' action shows a receipt detail view with all donation info"
+      ]
+    },
+    {
+      "id": "REQ-7",
+      "text": "Implement a campaign progress tracking view. Each campaign detail page shows a visual progress bar indicating percentage of fundraising goal reached, total donors count, days remaining (if end date is set), and a list of recent donors (by display name or 'Anonymous').",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-2"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Progress bar visually fills based on amount raised / goal",
+        "Percentage, total raised, and goal amount are displayed numerically",
+        "Total donor count is shown",
+        "Days remaining is calculated and displayed for campaigns with an end date",
+        "Recent donors section lists up to 10 most recent donor names"
+      ]
+    },
+    {
+      "id": "REQ-8",
+      "text": "Render the generated hero banner and app logo as static assets. Use 'pawfund-logo.dim_256x256.png' in the app header/navbar and 'pawfund-hero.dim_1200x400.png' on the home page above the campaign listings.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-2"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Logo appears in the top navigation bar on all pages",
+        "Hero banner is displayed prominently on the home/discover page",
+        "Images are loaded from frontend/public/assets/generated/"
+      ]
+    }
+  ],
+  "constraints": [
+    "Use Internet Identity as the sole authentication mechanism — no third-party OAuth providers",
+    "All data persistence must use the Motoko backend actor — no external databases",
+    "Frontend must use React with TypeScript and Tailwind CSS only",
+    "Do not edit any files under frontend/src/hooks/ or frontend/src/components/ui"
+  ],
+  "nonGoals": [
+    "Real payment gateway integration (Stripe or otherwise) — donation amounts are recorded as declared values without actual money movement",
+    "Admin panel for campaign management in this iteration",
+    "Social sharing or referral features",
+    "Email or push notifications",
+    "Mobile app packaging (APK/Android build) — this is a web app optimized for mobile screens"
+  ],
+  "imageRequirements": {
+    "required": [
+      "Circular app logo with a warm amber paw print icon centered on a creamy white background, clean and friendly style (pawfund-logo.dim_256x256.png)",
+      "Wide hero banner with illustrated warm savanna/shelter scene featuring silhouettes of happy animals (dog, cat, bird) in golden hour lighting with soft green foliage, earthy amber and soft green color palette (pawfund-hero.dim_1200x400.png)"
+    ],
+    "edits": []
+  }
+}
