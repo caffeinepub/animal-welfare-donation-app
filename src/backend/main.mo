@@ -83,18 +83,6 @@ actor {
       isActive = true;
     },
     {
-      id = 1;
-      title = "Cow feeding on occasion of Padwa";
-      description = "Celebrate Padwa (Pratipada) by contributing to the sacred tradition of Gau Seva. On this auspicious day, help us feed cows with special prasad, jaggery, and fodder as a mark of devotion and gratitude. Your seva brings blessings to your family.";
-      animalType = "Cow";
-      imageUrl = "";
-      fundraisingGoal = 31000;
-      amountRaised = 0;
-      startDate = seedStart;
-      endDate = seedEnd;
-      isActive = true;
-    },
-    {
       id = 2;
       title = "Street Dog Feeding Drive";
       description = "Thousands of street dogs go hungry every day. Join our feeding drive to provide nutritious meals to stray dogs in your city. Every contribution helps us reach more dogs and reduce their suffering.";
