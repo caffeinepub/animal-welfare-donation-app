@@ -1,0 +1,23 @@
+{
+  "name": "GOSEVA PASHUPALAK",
+  "short_name": "GOSEVA",
+  "description": "Donate to animal welfare campaigns — cows, dogs, cats and birds.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#fff7ed",
+  "theme_color": "#f97316",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "/assets/generated/goseva-icon.dim_512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/assets/generated/goseva-icon.dim_512x512.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    }
+  ]
+}

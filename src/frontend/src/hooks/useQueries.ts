@@ -172,3 +172,63 @@ export function useGetRecurringDonations() {
     enabled: !!actor && !isFetching,
   });
 }
+
+// ---- Admin ----
+
+export function useIsCallerAdmin() {
+  const { actor, isFetching } = useActor();
+  return useQuery<boolean>({
+    queryKey: ["isCallerAdmin"],
+    queryFn: async () => {
+      if (!actor) return false;
+      return actor.isCallerAdmin();
+    },
+    enabled: !!actor && !isFetching,
+  });
+}
+
+export function useCreateCampaign() {
+  const { actor } = useActor();
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (params: {
+      title: string;
+      description: string;
+      animalType: string;
+      imageUrl: string;
+      fundraisingGoal: bigint;
+      startDate: bigint;
+      endDate: bigint;
+    }) => {
+      if (!actor) throw new Error("Actor not available");
+      return actor.createCampaign(
+        params.title,
+        params.description,
+        params.animalType,
+        params.imageUrl,
+        params.fundraisingGoal,
+        params.startDate,
+        params.endDate,
+      );
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["activeCampaigns"] });
+      queryClient.invalidateQueries({ queryKey: ["allCampaigns"] });
+    },
+  });
+}
+
+export function useDeactivateCampaign() {
+  const { actor } = useActor();
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (campaignId: bigint) => {
+      if (!actor) throw new Error("Actor not available");
+      return actor.deactivateCampaign(campaignId);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["activeCampaigns"] });
+      queryClient.invalidateQueries({ queryKey: ["allCampaigns"] });
+    },
+  });
+}

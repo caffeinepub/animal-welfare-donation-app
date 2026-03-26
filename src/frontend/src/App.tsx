@@ -10,6 +10,7 @@ import Layout from "./components/Layout";
 import ProfileSetupModal from "./components/ProfileSetupModal";
 import { useInternetIdentity } from "./hooks/useInternetIdentity";
 import { useGetCallerUserProfile } from "./hooks/useQueries";
+import Admin from "./pages/Admin";
 import CampaignDetail from "./pages/CampaignDetail";
 import DonationHistory from "./pages/DonationHistory";
 import Home from "./pages/Home";
@@ -32,12 +33,12 @@ function RootLayout() {
       <div className="min-h-screen flex items-center justify-center bg-background">
         <div className="flex flex-col items-center gap-3">
           <img
-            src="/assets/generated/pawfund-logo.dim_256x256.png"
-            alt="PawFund"
+            src="/assets/generated/goseva-icon.dim_512x512.png"
+            alt="GOSEVA PASHUPALAK"
             className="w-16 h-16 rounded-full animate-pulse"
           />
           <p className="text-muted-foreground font-medium">
-            Loading PawFund...
+            Loading GOSEVA PASHUPALAK...
           </p>
         </div>
       </div>
@@ -81,11 +82,18 @@ const donationHistoryRoute = createRoute({
   component: DonationHistory,
 });
 
+const adminRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/admin",
+  component: Admin,
+});
+
 const routeTree = rootRoute.addChildren([
   indexRoute,
   campaignDetailRoute,
   profileRoute,
   donationHistoryRoute,
+  adminRoute,
 ]);
 
 const router = createRouter({ routeTree });

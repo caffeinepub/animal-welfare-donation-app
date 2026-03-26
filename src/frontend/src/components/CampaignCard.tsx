@@ -14,14 +14,7 @@ interface CampaignCardProps {
   campaign: AnimalCampaign;
 }
 
-function getAnimalImage(animalType: string, title?: string): string {
-  // Special campaigns with custom images
-  if (
-    title?.toLowerCase().includes("padwa") ||
-    title?.toLowerCase().includes("padva")
-  ) {
-    return "/assets/generated/cow-padwa-feeding.dim_800x600.jpg";
-  }
+function getAnimalImage(animalType: string): string {
   switch (animalType.toLowerCase()) {
     case "cow":
       return "/assets/generated/cow-eating.dim_800x600.jpg";
@@ -44,7 +37,7 @@ export default function CampaignCard({ campaign }: CampaignCardProps) {
     goal > 0 ? Math.min(Math.round((raised / goal) * 100), 100) : 0;
   const daysLeft = getDaysRemaining(campaign.endDate);
 
-  const animalImage = getAnimalImage(campaign.animalType, campaign.title);
+  const animalImage = getAnimalImage(campaign.animalType);
   const [imgSrc, setImgSrc] = useState(
     campaign.imageUrl ? campaign.imageUrl : animalImage,
   );

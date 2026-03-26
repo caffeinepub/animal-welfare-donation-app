@@ -95,18 +95,6 @@ actor {
       isActive = true;
     },
     {
-      id = 5;
-      title = "Gau Seva Padva";
-      description = "Gau Seva Padva is a sacred campaign to celebrate the auspicious occasion of Padva by serving and feeding cows. Join us in honouring our Gau Mata with nutritious prasad, green fodder, jaggery, and love. Your donation on this holy day brings immense blessings and fulfils the tradition of Gau Puja.";
-      animalType = "Cow";
-      imageUrl = "";
-      fundraisingGoal = 51000;
-      amountRaised = 0;
-      startDate = seedStart;
-      endDate = seedEnd;
-      isActive = true;
-    },
-    {
       id = 2;
       title = "Street Dog Feeding Drive";
       description = "Thousands of street dogs go hungry every day. Join our feeding drive to provide nutritious meals to stray dogs in your city. Every contribution helps us reach more dogs and reduce their suffering.";
@@ -147,7 +135,7 @@ actor {
   for (campaign in seedCampaigns.vals()) {
     activeCampaigns.add(campaign);
   };
-  campaignIdCounter := 6;
+  campaignIdCounter := 5;
 
   module AnimalCampaignModule {
     public func compareByAmountRaised(campaign1 : AnimalCampaign, campaign2 : AnimalCampaign) : Order.Order {
